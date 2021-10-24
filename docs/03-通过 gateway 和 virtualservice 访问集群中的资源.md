@@ -1,4 +1,4 @@
-# 01-通过 gateway 和 virtualservice 访问集群中的资源
+# 03-通过 gateway 和 virtualservice 访问集群中的资源
 
 ## 通过 NodePort 的 Service 访问集群中的资源
 

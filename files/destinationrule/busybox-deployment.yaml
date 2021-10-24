@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hexiaohong-client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hexiaohong-client
+  template:
+    metadata:
+      labels:
+        app: hexiaohong-client
+    spec:
+      containers:
+      - name: busybox
+        image: busybox
+        imagePullPolicy: IfNotPresent
+        command: ["/bin/sh", "-c", "sleep 3600"]

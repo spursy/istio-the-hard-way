@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tomcat
+  labels:
+    server: tomcat
+    app: web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      server: tomcat
+      app: web
+  template:
+    metadata:
+      labels:
+        server: tomcat
+        app: web
+    spec:
+      containers:
+      - name: tomcat
+        image: docker.io/kubeguide/tomcat-app:v1
+        imagePullPolicy: IfNotPresent
+        
+--- 
+apiVersion: v1
+kind: Service
+metadata:
+  name: tomcat-svc
+spec:
+  selector:
+    server: tomcat
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+    protocol: TCP

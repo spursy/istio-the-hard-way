@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: httpd
+  labels:
+    server: httpd
+    app: web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      server: httpd
+      app: web
+  template:
+    metadata:
+      labels:
+        server: httpd
+        app: web
+    spec:
+      containers:
+      - name: busybox
+        image: busybox
+        imagePullPolicy: IfNotPresent
+        command: ["/bin/sh", "-c", "echo 'this is httpd' > /var/www/index.html; httpd -f -p 8080 -h /var/www"]
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: httpd-svc
+spec:
+  selector:
+    server: httpd
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+    protocol: TCP
