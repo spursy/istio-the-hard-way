@@ -1,5 +1,7 @@
 # 02-destinationrule
 
+## 创建 httpd 和 tomcat 资源
+
 - 创建 httpd 资源
 
 ```bash
@@ -45,6 +47,8 @@ spec:
 EOF
 ```
 
+![创建httpd资源](/screen-shot/02/创建httpd资源.png)
+
 - 创建 tomcat 资源
 
 ```bash
@@ -89,6 +93,8 @@ spec:
 EOF
 ```
 
+![创建tomcat资源](/screen-shot/02/创建tomcat资源.png)
+
 - 创建 busybox 资源
   
 ```bash
@@ -113,8 +119,10 @@ spec:
         imagePullPolicy: IfNotPresent
         command: ["/bin/sh", "-c", "sleep 3600"]
 ---
-EOF        
+EOF 
 ```
+
+![创建busybox资源](/screen-shot/02/创建busybox资源.png)
 
 - 验证 httpd 和 tomcat 资源是否可以连通
 
@@ -127,6 +135,12 @@ wget -q -O - http://httpd-svc:8080
 // 验证 tomcat 资源是否可通
 wget -q -O - http://tomcat-svc:8080
 ```
+
+![验证httpd资源的连通性](/screen-shot/02/验证httpd资源的连通性.png)
+
+![验证tomcat的连通性](/screen-shot/02/验证tomcat的连通性.png)
+
+## 创建 virtualservice 和 destinationrule 相关资源
 
 - 创建名为 web-svc 的 service 资源
 
@@ -156,6 +170,12 @@ kubectl exec -it po/hexiaohong-client-xxxx    /bin/sh
 wget -q -O - http://web-svc:8080
 ```
 
+![验证web-svc的连通性](/screen-shot/02/验证web-svc的连通性.png)
+
+**通过上图可见，请求几乎平均的落到 httpd 和 tomcat 上，主要原因如下图：**
+
+![app=web的po资源](/screen-shot/02/app=web的po资源.png)
+
 - 创建 destination rule 资源
   
 ```bash
@@ -177,6 +197,8 @@ spec:
 EOF
 ```
 
+![创建destination-rule资源](/screen-shot/02/创建destination-rule资源.png)
+
 - 创建 virtualservice 资源
 
 ```bash
@@ -197,7 +219,9 @@ spec:
 EOF
 ```
 
-- 验证 web-svc 返回的结果
+![创建virtualservice资源](/screen-shot/02/创建virtualservice资源.png)
+
+- 验证 web-svc 返回的结果是不是仅请求到 httpd 服务上
   
 ```bash
 kubectl exec -it po/hexiaohong-client-xxxx    /bin/sh
@@ -205,6 +229,8 @@ kubectl exec -it po/hexiaohong-client-xxxx    /bin/sh
 // 验证 service 是否可通
 wget -q -O - http://web-svc:8080
 ```
+
+![验证web-svc的是不是仅请求到httpd服务上](/screen-shot/02/验证web-svc是不是仅请求到httpd服务上.png)
 
 - 修改 virtualservice 指定的资源版本为 v2
   
@@ -226,7 +252,9 @@ spec:
 EOF
 ```
 
-- 验证 web-svc 返回的结果
+![更新virtualservice的destination配置](/screen-shot/02/更新virtualservice的destination配置.png)
+
+- 验证 web-svc 返回的结果是不是仅请求到 tomcat 服务上
   
 ```bash
 kubectl exec -it po/hexiaohong-client-xxxx    /bin/sh
@@ -234,3 +262,5 @@ kubectl exec -it po/hexiaohong-client-xxxx    /bin/sh
 // 验证 service 是否可通
 wget -q -O - http://web-svc:8080
 ```
+
+![验证web-svc是不是仅请求到tomcat资源](/screen-shot/02/验证web-svc是不是仅请求到tomcat资源.png)

@@ -1,5 +1,7 @@
 # 01-virtualservice
 
+## 创建 httpd 和 tomcat 资源
+
 - 创建 httpd 资源
 
 ```bash
@@ -45,6 +47,8 @@ spec:
 EOF
 ```
 
+![创建httpd资源](/screen-shot/01/创建httpd资源.png)
+
 - 创建 tomcat 资源
 
 ```bash
@@ -89,6 +93,8 @@ spec:
 EOF
 ```
 
+![创建tomcat资源](/screen-shot/01/创建tomcat资源.png)
+
 - 创建 busybox 资源
   
 ```bash
@@ -116,6 +122,8 @@ spec:
 EOF
 ```
 
+![创建busybox资源](/screen-shot/01/创建busybox资源.png)
+
 - 验证 httpd 和 tomcat 资源是否可以连通
 
 ```bash
@@ -128,10 +136,16 @@ wget -q -O - http://httpd-svc:8080
 wget -q -O - http://tomcat-svc:8080
 ```
 
+![验证httpd的连通性](/screen-shot/01/验证httpd的连通性.png)
+
+![验证tomcat的连通性](/screen-shot/01/验证tomcat的连通性.png)
+
+## 创建 virtualservice 相关资源
+
 - 创建名为 web-svc 的 service 资源
 
 ```bash
-kubectl apply -f - <<EOF
+kubectl apply -f - << EOF
 apiVersion: v1
 kind: Service
 metadata:
@@ -148,10 +162,12 @@ spec:
 EOF    
 ```
 
+![创建web-svc资源](/screen-shot/01/创建web-svc资源.png)
+
 - 创建 virtual service
 
 ```bash
-kubectl apply -f - <<EOF
+kubectl apply -f - << EOF
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
@@ -171,6 +187,13 @@ spec:
 EOF
 ```
 
+- hosts 是 service 资源，也可使用 service 的简写，如 web
+- host 是目标 service 资源
+
+![创建virtualservice资源](/screen-shot/01/创建virtualservice资源.png)
+
+## 验证 virtualservice 资源
+
 - 验证 virtualservice 是否生效
 
 ```bash
@@ -179,6 +202,10 @@ kubectl exec -it hexiaohong-client-xxxxxx /bin/sh
 // 验证 web-svc 资源是否连通
 wget -q -O -  http://web-svc:8080
 ```
+
+![验证tomcat的连通性](/screen-shot/01/验证web-svc请求到tomcat资源.png)
+
+![验证web-svc请求到httpd资源](/screen-shot/01/验证web-svc请求到httpd资源.png)
 
 - 修改 virtualservice，使得部分 route 携带 header 参数
   
@@ -216,3 +243,5 @@ wget -q -O -  http://web-svc:8080 --header 'to:httpd'
 
 wget -q -O -  http://web-svc:8080
 ```
+
+![验证httproute的header-match请求](/screen-shot/01/验证httproute的header-match请求.png)
